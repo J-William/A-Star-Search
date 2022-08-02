@@ -11,6 +11,8 @@ class Problem:
         self._STEPCOST = 1
         # The frontier of states to explore order by path cost
         self.frontier = PriorityQueue()
+        # The initial state
+        self.initial_state = initial_state
 
     class Action(Enum):
         """ Enumeration of actions."""
@@ -19,7 +21,7 @@ class Problem:
         LEFT = 'LEFT'
         RIGHT = 'RIGHT'
 
-    class Node:
+    class Node(object):
 
         def __init__(self, state: list, parent: Problem.Node, action: Problem.Action, pathCost: int):
              # The state represented by the node
@@ -30,6 +32,28 @@ class Problem:
             self.action = action
             # The path cost of achieving this state from the initial state
             self.pathCost = pathCost
+
+        def __repr__(self) -> str:
+            out = str()
+            for e in self.state:
+                out += str(e)
+            return "State({})".format(out)
+
+        def __eq__(self,  other: object):
+            if isinstance(other, Problem.Node):
+                return (self.state == other.state)
+            else:
+                return False
+        
+        def __ne__(self, other: object) -> bool:
+            return (not self.__eq__(other))
+        
+        def __hash__(self) -> int:
+            return hash(self.__repr__) 
+
+
+            
+
     
     def actions(self, state: list) -> list:
         """ Returns a list of potential actions from a given state."""
@@ -54,7 +78,7 @@ class Problem:
         elif blank == 8:
             return [ self.Action.LEFT, self.Action.UP ]
         else:
-            raise Exception('State index error.')
+            raise Exception('State index error resolving potential actions.')
 
     def heuristic(self, state: list) -> int:
         """ 

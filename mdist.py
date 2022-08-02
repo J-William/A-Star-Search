@@ -1,4 +1,4 @@
-def manhattan_distance(self, location: int, home: int) -> int:
+def manhattan_distance(location: int, home: int) -> int:
         """ Returns the direct step distance between two locations on the 8-Block board."""
         if location == home:
             return 0
