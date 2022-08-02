@@ -71,3 +71,18 @@ def manhattan_distance(location: int, home: int) -> int:
                 return 3
             else:
                 return 4
+
+def mdist(state: list):
+
+    mdist = 0
+
+    for e in state:
+        location = state.index(e)        
+        # Any given block's home index is 1 less than itself.
+        home = e - 1
+        # Except for 0 which belongs at index 8
+        if home == -1: home = 8
+        print('e: ', e, 'home: ', home, 'location: ', location)
+        mdist += manhattan_distance(location, home)
+    
+    return mdist
