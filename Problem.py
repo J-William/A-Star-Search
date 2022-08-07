@@ -1,20 +1,47 @@
 from __future__ import annotations
 from enum import Enum
-from queue import PriorityQueue
+import heapq
+
 
 class Problem:
-
-    def __init__(self, initial_state: list, heuristic = None):
+    def __init__(self, initial: list, heuristic = None):
         # The set of explored states
         self.explored = set()
         # Uniform step cost for this problem
         self._STEPCOST = 1
         # The frontier of states to explore order by path cost
-        self.frontier = PriorityQueue()
+        self.frontier = self.Frontier()
         # The initial state
-        self.initial_state = initial_state
+        self.initial_state = self.State(initial)
         # The heuristic funciton to use
         self.h = heuristic
+
+
+    class State():
+        """ Representation of a board state."""
+        def __init__(self, init: list):
+            self.array = init
+        
+        def __repr__(self) -> str:
+            out = str()
+            for e in self.array:
+                out += str(e)
+            return "State({})".format(out)
+        
+        def __eq__(self,  other: object):
+            """ Equality comparison."""
+            if isinstance(other, Problem.State):
+                return (self.array == other.array)
+            else:
+                return False
+        
+        def __ne__(self, other: object) -> bool:
+            """ Inequality comparison."""
+            return (not self.__eq__(other))
+
+        def __hash__(self):
+            return hash(self.__repr__) 
+
 
     class Action(Enum):
         """ Enumeration of actions."""
@@ -23,9 +50,10 @@ class Problem:
         LEFT = 'LEFT'
         RIGHT = 'RIGHT'
 
+
     class Node(object):
 
-        def __init__(self, state: list, parent: Problem.Node, action: Problem.Action, pathCost: int):
+        def __init__(self, state: Problem.State, parent: Problem.Node, action: Problem.Action, pathCost: int):
              # The state represented by the node
             self.state = state
             # The parent node that preceded this state
@@ -37,15 +65,12 @@ class Problem:
 
         def __repr__(self) -> str:
             """ Return a string representation of the node's state."""
-            out = str()
-            for e in self.state:
-                out += str(e)
-            return "State({})".format(out)
+            return self.state.__repr__() + " Action: {}, pathCost: {}".format(self.action, self.pathCost)
 
         def __eq__(self,  other: object):
             """ Equality comparison."""
             if isinstance(other, Problem.Node):
-                return (self.state == other.state)
+                return (self.state.array == other.state.array)
             else:
                 return False
         
@@ -53,15 +78,59 @@ class Problem:
             """ Inequality comparison."""
             return (not self.__eq__(other))
         
+        def __lt__(self, other: object) -> bool:
+            """ Less than comparison """
+            if isinstance(other, Problem.Node):
+                return (self.state.array < other.state.array)
+            else:
+                raise Exception("Can't compare Node with other objects.")
+
+        def __gt__(self, other: object) -> bool:
+            """ Less than comparison """
+            if isinstance(other, Problem.Node):
+                return (self.state.array > other.state.array)
+            else:
+                raise Exception("Can't compare Node with other objects.")
+
         def __hash__(self) -> int:
             """ Hash function necessary to add to a Set."""
             return hash(self.__repr__) 
 
 
+    class Frontier():
+        def __init__(self) -> None:
+            """ Priority queue of tuple(pathCost, Node) order by min pathCost"""
+            self.array = list()
+
+        def __contains__(self, other: Problem.Node) -> bool:
+            """ Compares by states of entries and the state of a target node."""
+            for tup in self.array:
+                if other.state == tup[1].state:
+                    return True
+            return False
+
+        def size(self) -> int:
+            return len(self.array)
+
+        def replace(self, node: Problem.Node) -> None:
+            """ Search the frontier for node with the same state but higher path cost; if found replace it."""
+            for i in range(len(self.array)):
+                if (self.array[i][1].state == node.state) and (self.array[i][0] > node.pathCost):
+                    # Replace
+                    self.array[i] = (node.pathCost, node)
+            heapq.heapify(self.array)      
+            
+        def push(self, data: tuple[int, Problem.Node] ):
+            heapq.heappush(self.array, data)
+        
+        def pop(self) -> Problem.Node:
+            return heapq.heappop(self.array)[1]
+
+
     
-    def actions(self, state: list) -> list:
+    def actions(self, state: State) -> list:
         """ Returns a list of potential actions from a given state."""
-        blank = state.index(0)
+        blank = state.array.index(0)
 
         if blank == 0:
             return [ self.Action.RIGHT, self.Action.DOWN ]
@@ -84,7 +153,8 @@ class Problem:
         else:
             raise Exception('State index error resolving potential actions.')
 
-    def heuristic(self, state: list) -> int:
+
+    def heuristic(self, state: State) -> int:
         """ 
             Returns a heuristic measure of a state's undesirability given by the sum of the 
             direct step distances between each block and it's goal location.
@@ -95,9 +165,9 @@ class Problem:
             return 0
 
 
-    def result(self, state: list, action: Action) -> list:
+    def result(self, state: State, action: Action) -> list:
         """ Return the new state resulting from an action on a given state."""
-        blank = state.index(0)
+        blank = state.array.index(0)
         
         # Determine the location of the block to swap with based on action
         if action == self.Action.UP:
@@ -111,10 +181,36 @@ class Problem:
         else:
             raise Exception('Invalid Action attempted.')    
 
-        # Swap the location of the target block and the blank
-        state[blank], state[target] = state[target], state[blank]
-        return state    
+        # Create the new result state as a copy of parent
+        newState = self.State(state.array.copy())
+        # Swap the location of the target block and the blank to get the new state
+        newState.array[blank], newState.array[target] = newState.array[target], newState.array[blank]
+        return newState    
 
     def create_child(self, parent: Node, action: Action):
         """ Create a child node from the parent and an action."""        
-        pass
+        newState = self.result(parent.state, action)
+
+        return self.Node(
+            state   =    newState,
+            parent  =    parent,
+            action  =    action,
+            pathCost =  parent.pathCost + self._STEPCOST + self.heuristic(newState)
+
+        )
+
+
+    def goal_test(self, state: State) -> bool:
+        """ Test for the goal state. """
+        return state.array == [ 1, 2, 3, 4, 5, 6, 7, 8, 0 ]
+
+
+    def solution(self, node: Node) -> list:
+        """ Generate a solution when a goal state is reached."""
+        actions = list()
+        while(node.parent is not None):
+            actions.append(node.action)
+            node = node.parent
+        
+        actions.reverse()
+        return actions
