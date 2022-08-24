@@ -1,13 +1,13 @@
 from Problem import Problem
 
 def manhattan_distance(point1, point2) -> int:
-    """ Returns the direct step distance between two locations on the 8-Block board."""
+    """ Returns the manhattan distance between two locations on the 8-Block board."""
     return abs(point1[0] - point2[0]) + abs(point1[1] - point2[1])
 
 
 
 def mdist(state: Problem.State|list[int]):
-    """ TODO"""    
+    """ Return a summation of the manhattan distances between blocks and their home."""    
     matrix = list()
     dist = int()
     i = 0
@@ -23,7 +23,7 @@ def mdist(state: Problem.State|list[int]):
         dist += manhattan_distance((homex, homey), (block[1], block[2]))
 
     return dist
-    
+
         
 
 
