@@ -4,6 +4,7 @@ import heapq
 
 
 class Problem:
+    """ 8x8 Sliding Block Puzzle Problem with BFS and A*."""
     def __init__(self, initial: list, heuristic = None):
         # The set of explored states
         self.explored = set()
@@ -13,7 +14,7 @@ class Problem:
         self.frontier = self.Frontier()
         # The initial state
         self.initial_state = self.State(initial)
-        # The heuristic funciton to use
+        # If a heuristic function is provided it is used for A*
         self.h = heuristic
 
 
@@ -23,23 +24,25 @@ class Problem:
             self.array = init
         
         def __repr__(self) -> str:
+            """ String representation."""
             out = str()
             for e in self.array:
                 out += str(e)
             return "State({})".format(out)
         
         def __eq__(self,  other: object):
-            """ Equality comparison."""
+            """ Equality comparison, necessary to store in a set."""
             if isinstance(other, Problem.State):
                 return (self.array == other.array)
             else:
                 return False
         
         def __ne__(self, other: object) -> bool:
-            """ Inequality comparison."""
+            """ Inequality comparison, necessary to store in a set."""
             return (not self.__eq__(other))
 
         def __hash__(self):
+            """ Hash expression, necessary to store in a set."""
             return hash(self.__repr__) 
 
 
@@ -64,7 +67,7 @@ class Problem:
             self.pathCost = pathCost
 
         def __repr__(self) -> str:
-            """ Return a string representation of the node's state."""
+            """ Return a string representation of the node."""
             return self.state.__repr__() + " Action: {}, pathCost: {}".format(self.action, self.pathCost)
 
         def __eq__(self,  other: object):
@@ -86,14 +89,14 @@ class Problem:
                 raise Exception("Can't compare Node with other objects.")
 
         def __gt__(self, other: object) -> bool:
-            """ Less than comparison """
+            """ Greater than comparison """
             if isinstance(other, Problem.Node):
                 return (self.state.array > other.state.array)
             else:
                 raise Exception("Can't compare Node with other objects.")
 
         def __hash__(self) -> int:
-            """ Hash function necessary to add to a Set."""
+            """ Hash function."""
             return hash(self.__repr__) 
 
 
@@ -156,8 +159,8 @@ class Problem:
 
     def heuristic(self, state: State) -> int:
         """ 
-            Returns a heuristic measure of a state's undesirability given by the sum of the 
-            direct step distances between each block and it's goal location.
+            Map any supplied heuristic function to the create_child's 
+            pathCost evaluation.         
         """
         if self.h:
             return self.h(state)

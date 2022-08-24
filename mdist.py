@@ -1,88 +1,31 @@
-def manhattan_distance(location: int, home: int) -> int:
-        """ Returns the direct step distance between two locations on the 8-Block board."""
-        if location == home:
-            return 0
-        elif location == 0:
-            if home in [1, 3]:
-                return 1
-            elif home in [2, 4, 6]:
-                return 2
-            elif home in  [5, 7]:
-                return 3
-            else:
-                return 4
-        elif location == 1:
-            if home in [0, 2, 4]:
-                return 1
-            elif home in [3, 5, 7]:
-                return 2
-            else:
-                return 3
-        elif location == 2:
-            if home in [1, 5]:
-                return 1
-            elif home in [0, 4, 8]:
-                return 2
-            elif home in [3, 7]:
-                return 3
-            else:
-                return 4
-        elif location == 3:
-            if home in [0, 4, 6]:
-                return 1
-            elif home in [1, 5, 7]:
-                return 2
-            else:
-                return 3
-        elif location == 4:
-            if home in [1, 3, 5, 7]:
-                return 1
-            else:
-                return 2
-        elif location == 5:
-            if home in [2, 4, 8]:
-                return 1
-            elif home in [1, 3, 7]:
-                return 2
-            else:
-                return 3
-        elif location == 6:
-            if home in [3, 7]:
-                return 1
-            elif home in [0, 4, 8]:
-                return 2
-            elif home in [1, 5]:
-                return 3
-            else:
-                return 4
-        elif location == 7:
-            if home in [4, 6, 8]:
-                return 1
-            elif home in [1, 3, 5]:
-                return 2
-            else:
-                return 3
-        elif location == 8:
-            if home in [5, 7]:
-                return 1
-            elif home in [2, 4, 6]:
-                return 2
-            elif home in [1, 3]:
-                return 3
-            else:
-                return 4
+from Problem import Problem
 
-def mdist(state: list):
+def manhattan_distance(point1, point2) -> int:
+    """ Returns the direct step distance between two locations on the 8-Block board."""
+    return abs(point1[0] - point2[0]) + abs(point1[1] - point2[1])
 
-    mdist = 0
 
-    for e in state:
-        location = state.index(e)        
-        # Any given block's home index is 1 less than itself.
-        home = e - 1
-        # Except for 0 which belongs at index 8
-        if home == -1: home = 8
-        print('e: ', e, 'home: ', home, 'location: ', location)
-        mdist += manhattan_distance(location, home)
+
+def mdist(state: Problem.State|list[int]):
+    """ TODO"""    
+    matrix = list()
+    dist = int()
+    i = 0
+    for x in range(1, 4):
+        for y in range(1, 4):
+            # Matrix of tuple(val, x, y)
+            matrix.append((state.array[i], x, y))
+            i += 1
     
-    return mdist
+    for block in matrix:
+        # The blocks home index is its value: tuple(val, x, y)
+        homex, homey = matrix[block[0]][1], matrix[block[0]][2]
+        dist += manhattan_distance((homex, homey), (block[1], block[2]))
+
+    return dist
+    
+        
+
+
+
+    
