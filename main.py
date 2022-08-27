@@ -32,7 +32,9 @@ def solve(initial = [1, 0, 2, 3, 4, 5, 6, 7, 8], h = None):
 
         p.explored.add(node)
         
+
         print(f"Solving from {p.initial_state} | Explored States: {len(p.explored)} | Frontier States: {len(p.frontier.array)}", end='\r')
+
         
         for action in p.actions(node.state):
             # Explore actions possible from this state; children of this node
