@@ -1,5 +1,5 @@
 from Problem import Problem as P
-from heuristics import mdist
+from heuristics import mdist, edist
 from os import get_terminal_size
 import random
 import time
@@ -51,12 +51,21 @@ def solve(initial = [1, 0, 2, 3, 4, 5, 6, 7, 8], h = None):
 
 def timedSolve(state: P.State, heuristic = None):
     """ Wraps solve providing printout of details about the run."""
+    
+    if 'mdist' in str(heuristic):
+        heuristic_name = 'Manhattan Distance'
+    elif 'edist' in str(heuristic):
+        heuristic_name = 'Euclidean Distance'
+    else:
+        heuristic_name = 'None'
+    
     tic = time.perf_counter()
     ans = solve(state.array, h=heuristic)
     toc = time.perf_counter()
+    
     print('-'*100)
     print(f'Solved from initial state: {state}')
-    print(f'Heuristic used: {str(heuristic)}')
+    print(f'Heuristic used: {heuristic_name}')
     print(f'{len(ans)} moves in solution')
     print(f'Runtime: {toc-tic:0.4f} seconds.')
     print('-'*100)
@@ -67,9 +76,22 @@ if __name__ == '__main__':
         print('Warning: Increase the width of your terminal window for proper output.')
         input('Press enter to continue...')
 
-    # Generate a few random states and test the algorithm with and without a heuristic
-    states = [generate_state(x) for x in range(1, 50, 10)]
     
-    for state in states:
-        timedSolve(state)
-        timedSolve(state, mdist)
+    while(True):
+        exit_keywords = ['exit', 'e', 'q', 'quit']
+        print('Type quit, exit, or q at anytime to exit.\n')
+        steps = input('Enter an integer representing the difficulty of the puzzle (recommend 5-50): ')
+        if steps.lower() in exit_keywords: break
+        
+        print('\n1.) Uniform Cost Search')
+        print('2.) A* (Manhattan Distance)')
+        print('3.) A* (Euclidean Distance)\n')
+        h = input('Pick an algorithm: ')
+        if h.lower() in exit_keywords: break
+        
+        if h == '2':
+            timedSolve(generate_state(int(steps)), mdist)
+        elif h == '3':
+            timedSolve(generate_state(int(steps)), edist)
+        else:
+            timedSolve(generate_state(int(steps)))
