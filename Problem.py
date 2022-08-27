@@ -4,13 +4,13 @@ import heapq
 
 
 class Problem:
-    """ 8x8 Sliding Block Puzzle Problem with BFS and A*."""
+    """ 8x8 Sliding Block Puzzle Problem with Uniform Cost Search and A*."""
     def __init__(self, initial: list, heuristic = None):
         # The set of explored states
         self.explored = set()
         # Uniform step cost for this problem
         self._STEPCOST = 1
-        # The frontier of states to explore order by path cost
+        # The frontier of states to explore ordered by path cost
         self.frontier = self.Frontier()
         # The initial state
         self.initial_state = self.State(initial)
@@ -21,7 +21,11 @@ class Problem:
     class State():
         """ Representation of a board state."""
         def __init__(self, init: list):
-            self.array = init
+            # Only accept valid states
+            if sorted(init) == [0, 1, 2, 3, 4, 5, 6, 7, 8]:
+                self.array = init
+            else:
+                raise Exception('Invalid state creation attempt!')
         
         def __repr__(self) -> str:
             """ String representation."""
@@ -31,18 +35,18 @@ class Problem:
             return "State({})".format(out)
         
         def __eq__(self,  other: object):
-            """ Equality comparison, necessary to store in a set."""
+            """ Equality comparison"""
             if isinstance(other, Problem.State):
                 return (self.array == other.array)
             else:
                 return False
         
         def __ne__(self, other: object) -> bool:
-            """ Inequality comparison, necessary to store in a set."""
+            """ Inequality comparison"""
             return (not self.__eq__(other))
 
         def __hash__(self):
-            """ Hash expression, necessary to store in a set."""
+            """ Hash expression."""
             return hash(self.__repr__) 
 
 
@@ -122,12 +126,6 @@ class Problem:
                     # Replace
                     self.array[i] = (node.pathCost, node)
             heapq.heapify(self.array)      
-            
-        def contains(self, state: Problem.State) -> int:
-            for e in self.array:
-                if (e[1].state == state):
-                    return e[1].pathCost
-            return -1
 
         def push(self, data: tuple[int, Problem.Node] ):
             heapq.heappush(self.array, data)
