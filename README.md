@@ -9,6 +9,6 @@ Path Cost calculation for new Nodes and the algorithm becomes an A* Search.
 |Files||
 |--------------|:----------------------:|
 | Problem.py | The Problem class provides all the search problem infrastructure.|
-|heuristics.py| Provides a manahattan distance function for use with A*.|
+|heuristics.py| Provides manahattan and euclidean distance functions for use with A*.|
 |main.py|Contains the implementation of the algorithm and demonstration/testing routines.|
 
