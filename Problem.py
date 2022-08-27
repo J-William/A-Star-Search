@@ -97,7 +97,7 @@ class Problem:
 
         def __hash__(self) -> int:
             """ Hash function."""
-            return hash(self.__repr__) 
+            return hash(self.state.__repr__) 
 
 
     class Frontier():
@@ -123,6 +123,12 @@ class Problem:
                     self.array[i] = (node.pathCost, node)
             heapq.heapify(self.array)      
             
+        def contains(self, state: Problem.State) -> int:
+            for e in self.array:
+                if (e[1].state == state):
+                    return e[1].pathCost
+            return -1
+
         def push(self, data: tuple[int, Problem.Node] ):
             heapq.heappush(self.array, data)
         
@@ -205,7 +211,7 @@ class Problem:
 
     def goal_test(self, state: State) -> bool:
         """ Test for the goal state. """
-        return state.array == [ 1, 2, 3, 4, 5, 6, 7, 8, 0 ]
+        return state.array == [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
 
 
     def solution(self, node: Node) -> list:
