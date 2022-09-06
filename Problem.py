@@ -4,18 +4,21 @@ import heapq
 
 
 class Problem:
-    """ 8x8 Sliding Block Puzzle Problem with Uniform Cost Search and A*."""
+    """ 8x8 Sliding Block Puzzle Problem with Uniform Cost Search and A* Infrastructure"""
     def __init__(self, initial: list, heuristic = None):
         # The set of explored states
         self.explored = set()
-        # Uniform step cost for this problem
-        self._STEPCOST = 1
         # The frontier of states to explore ordered by path cost
         self.frontier = self.Frontier()
         # The initial state
         self.initial_state = self.State(initial)
         # If a heuristic function is provided it is used for A*
         self.h = heuristic
+
+    @property
+    def STEPCOST(self):
+        """ CONSTANT - Uniform step cost of 1 for this problem"""
+        return 1
 
 
     class State():
@@ -100,7 +103,7 @@ class Problem:
                 raise Exception("Can't compare Node with other objects.")
 
         def __hash__(self) -> int:
-            """ Hash function."""
+            """ The hash for a node with a given state is the same as the hash for that state."""
             return hash(self.state.__repr__) 
 
 
@@ -164,7 +167,9 @@ class Problem:
     def heuristic(self, state: State) -> int:
         """ 
             Map any supplied heuristic function to the create_child's 
-            pathCost evaluation.         
+            pathCost evaluation. Returns 0 if a function is not supplied so that the
+            pathCost formula: (parent.pathCost + STEPCOST + heuristic(newNode.state))
+            is unaffected.         
         """
         if self.h:
             return self.h(state)
@@ -202,14 +207,14 @@ class Problem:
             state   =    newState,
             parent  =    parent,
             action  =    action,
-            pathCost =  parent.pathCost + self._STEPCOST + self.heuristic(newState)
+            pathCost =  parent.pathCost + self.STEPCOST + self.heuristic(newState)
 
         )
 
 
     def goal_test(self, state: State) -> bool:
         """ Test for the goal state. """
-        return state.array == [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ]
+        return state.array == sorted(state.array)
 
 
     def solution(self, node: Node) -> list:
