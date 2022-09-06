@@ -5,7 +5,7 @@ import heapq
 
 class Problem:
     """ 8x8 Sliding Block Puzzle Problem with Uniform Cost Search and A* Infrastructure"""
-    def __init__(self, initial: list, heuristic = None):
+    def __init__(self, initial: list, heuristic: callable = None):
         # The set of explored states
         self.explored = set()
         # The frontier of states to explore ordered by path cost

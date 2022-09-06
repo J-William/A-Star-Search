@@ -1,10 +1,9 @@
-from typing import Tuple
 from Problem import Problem
 from math import sqrt
 
 
 
-def evaluate_over_board(state: Problem.State, measure) -> int:
+def evaluate_over_board(state: Problem.State, measure: callable) -> int:
     """ Sums the values returned by a given heuristic distiance meausre between all blocks and their homes."""
     matrix = list()
     dist = int()

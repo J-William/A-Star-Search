@@ -15,7 +15,7 @@ def generate_state(steps = 10):
     return state
 
 
-def solve(initial = [1, 0, 2, 3, 4, 5, 6, 7, 8], h = None):
+def solve(initial = [1, 0, 2, 3, 4, 5, 6, 7, 8], h: callable = None):
     """ Algorithm implementation."""
     
     # Setup the problem and add the initial state node to the frontier.
@@ -49,7 +49,7 @@ def solve(initial = [1, 0, 2, 3, 4, 5, 6, 7, 8], h = None):
                 p.frontier.replace(child)
 
 
-def timedSolve(state: P.State, heuristic = None):
+def timedSolve(state: P.State, heuristic: callable = None):
     """ Wraps solve providing printout of details about the run."""
     
     if 'mdist' in str(heuristic):
