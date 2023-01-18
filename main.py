@@ -1,5 +1,5 @@
 from Problem import Problem as P
-from heuristics import mdist, edist
+from heuristics import manhattan_distance, euclidean_distance
 from os import get_terminal_size
 import random
 import time
@@ -32,9 +32,7 @@ def solve(initial = [1, 0, 2, 3, 4, 5, 6, 7, 8], h: callable = None):
 
         p.explored.add(node)
         
-
         print(f"Solving from {p.initial_state} | Explored States: {len(p.explored)} | Frontier States: {len(p.frontier.array)}", end='\r')
-
         
         for action in p.actions(node.state):
             # Explore actions possible from this state; children of this node
@@ -52,9 +50,9 @@ def solve(initial = [1, 0, 2, 3, 4, 5, 6, 7, 8], h: callable = None):
 def timedSolve(state: P.State, heuristic: callable = None):
     """ Wraps solve providing printout of details about the run."""
     
-    if 'mdist' in str(heuristic):
+    if 'manhattan_distance' in str(heuristic):
         heuristic_name = 'Manhattan Distance'
-    elif 'edist' in str(heuristic):
+    elif 'euclidean_distance' in str(heuristic):
         heuristic_name = 'Euclidean Distance'
     else:
         heuristic_name = 'None'
@@ -77,8 +75,9 @@ if __name__ == '__main__':
         input('Press enter to continue...')
 
     
-    while(True):
-        exit_keywords = ['exit', 'e', 'q', 'quit']
+    exit_keywords = ['exit', 'e', 'q', 'quit']
+
+    while(True):    
         print('Type quit, exit, or q at anytime to exit.\n')
         steps = input('Enter an integer representing the difficulty of the puzzle (recommend 5-50): ')
         if steps.lower() in exit_keywords: break
@@ -90,8 +89,8 @@ if __name__ == '__main__':
         if h.lower() in exit_keywords: break
         
         if h == '2':
-            timedSolve(generate_state(int(steps)), mdist)
+            timedSolve(generate_state(int(steps)), manhattan_distance)
         elif h == '3':
-            timedSolve(generate_state(int(steps)), edist)
+            timedSolve(generate_state(int(steps)), euclidean_distance)
         else:
             timedSolve(generate_state(int(steps)))

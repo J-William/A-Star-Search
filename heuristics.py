@@ -2,7 +2,6 @@ from Problem import Problem
 from math import sqrt
 
 
-
 def evaluate_over_board(state: Problem.State, measure: callable) -> int:
     """ Sums the values returned by a given heuristic distiance meausre between all blocks and their homes."""
     matrix = list()
@@ -22,19 +21,19 @@ def evaluate_over_board(state: Problem.State, measure: callable) -> int:
     return dist  
 
 
-def manhattan_distance(point1, point2) -> int:
+def mdist(point1, point2) -> int:
     """ Returns the manhattan distance between two points."""
     return abs(point1[0] - point2[0]) + abs(point1[1] - point2[1])
 
-def euclidean_distance(point1, point2) -> int:
-    """ Returns the manhattan distance between two points."""
+def edist(point1, point2)  -> int:
+    """ Returns the euclidean distance between two points."""
     return sqrt(pow((point1[0] - point2[0]), 2) + pow((point1[1] - point2[1]), 2))
 
 
-def mdist(state: Problem.State) -> int:
+def manhattan_distance(state: Problem.State) -> int:
     """ Return a summation of the manhattan distances between blocks and their home."""    
-    return evaluate_over_board(state, manhattan_distance)
+    return evaluate_over_board(state, mdist)
 
-def edist(state: Problem.State)  -> int:
+def euclidean_distance(state: Problem.State) -> int:
     """ Return a summation of the euclidean distance between block and their home."""
-    return evaluate_over_board(state, euclidean_distance)
+    return evaluate_over_board(state, edist)
